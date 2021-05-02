@@ -1,7 +1,7 @@
 /**
  *  Project: Klahvid_4x4_proMicro
  *  Started: 26.04.2021
- *  Edited:  26.04.2021
+ *  Edited:  02.05.2021
  * 
  *  Copyright 2021 Tauno Erik
  * 
@@ -11,18 +11,17 @@
 
 #include <Arduino.h>
 
-#define NUM_BTN_ROWS (4)
-#define NUM_BTN_COLS (4)
+/* Settings */
+const uint8_t NUM_BTN_ROWS = 4;
+const uint8_t NUM_BTN_COLS = 4;
 
+// The number of button bounces before trigger a press or release
+const uint8_t MAX_DEBOUNCE = 5;
 
-// Debounce built-in to the code. This sets the number of button
-// high or low senses that trigger a press or release
-#define MAX_DEBOUNCE (5)
-
-// Pins connected to switch rows (2)
-static const uint8_t btnRowPins[NUM_BTN_ROWS] = {9, 8, 7, 6};
-// Pins connected to switch columns (1)
-static const uint8_t btnColPins[NUM_BTN_COLS] = {10, 16, 14, 15};
+// Switch rows
+static const uint8_t ROW_PINS[NUM_BTN_ROWS] = {9, 8, 7, 6};
+// Switch columns
+static const uint8_t COL_PINS[NUM_BTN_COLS] = {10, 16, 14, 15};
 
 // One debounce counter per switch
 static int8_t debounce_count[NUM_BTN_COLS][NUM_BTN_ROWS];
@@ -33,12 +32,12 @@ static void scan_row() {
   static uint8_t currentRow = 0;
 
   // Write current row LOW.
-  digitalWrite(btnRowPins[currentRow], LOW);
+  digitalWrite(ROW_PINS[currentRow], LOW);
 
   // Scan through switches on this row:
   for (uint8_t j = 0; j < NUM_BTN_COLS; j++) {
     // Read the button. pressed = LOW.
-    if (digitalRead(btnColPins[j]) == LOW) {
+    if (digitalRead(COL_PINS[j]) == LOW) {
       // Increment a debounce counter
       if (debounce_count[currentRow][j] < MAX_DEBOUNCE) {
         debounce_count[currentRow][j]++;
@@ -64,7 +63,7 @@ static void scan_row() {
   }
 
   // Once done scanning, de-select the switch by writing them HIGH.
-  digitalWrite(btnRowPins[currentRow], HIGH);
+  digitalWrite(ROW_PINS[currentRow], HIGH);
 
 
   // Increment currentRow, so next time we scan the next row
@@ -78,15 +77,15 @@ static void scan_row() {
 static void setupSwitchPins() {
   // Button drive rows - written LOW when active, HIGH otherwise
   for (uint8_t i = 0; i < NUM_BTN_ROWS; i++) {
-    pinMode(btnRowPins[i], OUTPUT);
+    pinMode(ROW_PINS[i], OUTPUT);
 
     // with nothing selected by default
-    digitalWrite(btnRowPins[i], HIGH);
+    digitalWrite(ROW_PINS[i], HIGH);
   }
 
   // Buttn select columns. Pulled high through resistor. Will be LOW when active
   for (uint8_t i = 0; i < NUM_BTN_COLS; i++) {
-    pinMode(btnColPins[i], INPUT_PULLUP);
+    pinMode(COL_PINS[i], INPUT_PULLUP);
   }
 }
 
