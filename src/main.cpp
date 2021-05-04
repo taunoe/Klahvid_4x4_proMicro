@@ -10,32 +10,35 @@
  **/
 
 #include <Arduino.h>
+#include "../lib/Tauno-keyboard-matrix/src/Tauno_keyboard_matrix.h"
 
 /* Settings */
-const uint8_t NUM_BTN_ROWS = 4;
-const uint8_t NUM_BTN_COLS = 4;
+const uint8_t NUM_ROWS = 4;
+const uint8_t NUM_COLS = 4;
+
+// Switch rows
+const uint8_t ROW_PINS[NUM_ROWS] = {9, 8, 7, 6};
+// Switch columns
+const uint8_t COL_PINS[NUM_COLS] = {10, 16, 14, 15};
 
 // The number of button bounces before trigger a press or release
 const uint8_t MAX_DEBOUNCE = 5;
 
-// Switch rows
-static const uint8_t ROW_PINS[NUM_BTN_ROWS] = {9, 8, 7, 6};
-// Switch columns
-static const uint8_t COL_PINS[NUM_BTN_COLS] = {10, 16, 14, 15};
-
 // One debounce counter per switch
-static int8_t debounce_count[NUM_BTN_COLS][NUM_BTN_ROWS];
+static int8_t debounce_count[NUM_COLS][NUM_ROWS];
+
+Tauno_Keyboard_Matrix Klahvid(ROW_PINS, COL_PINS, NUM_ROWS, NUM_COLS);
 
 /**********************************************************/
 
 static void scan_row() {
   static uint8_t currentRow = 0;
 
-  // Write current row LOW.
+  // Write current row LOW
   digitalWrite(ROW_PINS[currentRow], LOW);
 
   // Scan through switches on this row:
-  for (uint8_t j = 0; j < NUM_BTN_COLS; j++) {
+  for (uint8_t j = 0; j < NUM_COLS; j++) {
     // Read the button. pressed = LOW.
     if (digitalRead(COL_PINS[j]) == LOW) {
       // Increment a debounce counter
@@ -45,7 +48,7 @@ static void scan_row() {
         if ( debounce_count[currentRow][j] == MAX_DEBOUNCE ) {
           // Trigger key press
           Serial.print("Key pressed ");
-          Serial.println((currentRow * NUM_BTN_COLS) + j);
+          Serial.println((currentRow * NUM_COLS) + j);
         }
       }
     } else {
@@ -56,7 +59,7 @@ static void scan_row() {
           // If debounce counter hits 0
           // Trigger key release
           Serial.print("Key released ");
-          Serial.println((currentRow * NUM_BTN_COLS) + j);
+          Serial.println((currentRow * NUM_COLS) + j);
         }
       }
     }
@@ -68,15 +71,15 @@ static void scan_row() {
 
   // Increment currentRow, so next time we scan the next row
   currentRow++;
-  if (currentRow >= NUM_BTN_ROWS) {
+  if (currentRow >= NUM_ROWS) {
     currentRow = 0;
   }
 }
 
 
-static void setupSwitchPins() {
+static void setup_switch_pins() {
   // Button drive rows - written LOW when active, HIGH otherwise
-  for (uint8_t i = 0; i < NUM_BTN_ROWS; i++) {
+  for (uint8_t i = 0; i < NUM_ROWS; i++) {
     pinMode(ROW_PINS[i], OUTPUT);
 
     // with nothing selected by default
@@ -84,7 +87,7 @@ static void setupSwitchPins() {
   }
 
   // Buttn select columns. Pulled high through resistor. Will be LOW when active
-  for (uint8_t i = 0; i < NUM_BTN_COLS; i++) {
+  for (uint8_t i = 0; i < NUM_COLS; i++) {
     pinMode(COL_PINS[i], INPUT_PULLUP);
   }
 }
@@ -92,18 +95,21 @@ static void setupSwitchPins() {
 /**********************************************************/
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(11520);
 
-  setupSwitchPins();
+  //setup_switch_pins();
+  delay(3000);
+   Klahvid.begin();
 
   // Initialize the debounce counter array
-  for (uint8_t i = 0; i < NUM_BTN_COLS; i++) {
-    for (uint8_t j = 0; j < NUM_BTN_ROWS; j++) {
+  for (uint8_t i = 0; i < NUM_COLS; i++) {
+    for (uint8_t j = 0; j < NUM_ROWS; j++) {
       debounce_count[i][j] = 0;
     }
   }
 }
 
 void loop() {
-  scan_row();
+  //scan_row();
+   Klahvid.scan();
 }
