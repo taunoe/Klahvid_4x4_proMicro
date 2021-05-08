@@ -85,7 +85,7 @@ void Tauno_Keyboard_Matrix::scan_row() {
       Serial.print(col);
       Serial.println(" b = LOW");
       */
-     //print_debounce_count();
+     // print_debounce_count();
       // Increment a debounce counter
       if (_debounce_count[_current_row][col] < _MAX_DEBOUNCE) {
         _debounce_count[_current_row][col]++;
@@ -94,8 +94,12 @@ void Tauno_Keyboard_Matrix::scan_row() {
           // Trigger key press
           print_debounce_count();
           Serial.print("Key pressed: ");
-          Serial.println((_current_row * _NUM_COLS) + col);
-          Serial.print("_debounce_count[_current_row][col] = ");
+          Serial.print((_current_row * _NUM_COLS) + col);
+          Serial.print(" row:");
+          Serial.print(_current_row);
+          Serial.print(" col:");
+          Serial.print(col);
+          Serial.print(" _debounce_count[_current_row][col] = ");
           Serial.println(_debounce_count[_current_row][col]);
         }
       }

@@ -1,7 +1,7 @@
 /**
  *  Project: Klahvid_4x4_proMicro
  *  Started: 26.04.2021
- *  Edited:  02.05.2021
+ *  Edited:  08.05.2021
  * 
  *  Copyright 2021 Tauno Erik
  * 
@@ -21,9 +21,15 @@ const uint8_t ROW_PINS[NUM_ROWS] = {9, 8, 7, 6};
 // Switch columns
 const uint8_t COL_PINS[NUM_COLS] = {10, 16, 14, 15};
 
+const char KEYS[NUM_ROWS][NUM_COLS] = {
+  {'1', '2', '3', 'A'},
+  {'4', '5', '6', 'B'},
+  {'7', '8', '9', 'C'},
+  {'*', '0', '#', 'D'},
+};
+
 // The number of button bounces before trigger a press or release
 const uint8_t MAX_DEBOUNCE = 5;
-
 // One debounce counter per switch
 static int8_t debounce_count[NUM_COLS][NUM_ROWS];
 
@@ -97,9 +103,9 @@ static void setup_switch_pins() {
 void setup() {
   Serial.begin(11520);
 
-  //setup_switch_pins();
+  // setup_switch_pins();
   delay(3000);
-   Klahvid.begin();
+  Klahvid.begin();
 
   // Initialize the debounce counter array
   for (uint8_t i = 0; i < NUM_COLS; i++) {
@@ -110,6 +116,6 @@ void setup() {
 }
 
 void loop() {
-  //scan_row();
-   Klahvid.scan();
+  // scan_row();
+  Klahvid.scan();
 }

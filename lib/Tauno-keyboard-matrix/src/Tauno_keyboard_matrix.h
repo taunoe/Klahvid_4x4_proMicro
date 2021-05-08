@@ -15,13 +15,14 @@
 
 class Tauno_Keyboard_Matrix {
  private:
-  uint8_t * _ROW_PINS;    // Array of row pins
-  uint8_t * _COL_PINS;    // Array of col pins
-  uint8_t _NUM_ROWS;      // Number of rows
-  uint8_t _NUM_COLS;      // Number of cols
-  uint8_t _MAX_DEBOUNCE;  // Button bounces before trigger
+  const char * _KEY_MAP;            // Mapping key (row+col) to character
+  uint8_t * _ROW_PINS;              // Array of row pins
+  uint8_t * _COL_PINS;              // Array of col pins
+  uint8_t _NUM_ROWS;                // Number of rows
+  uint8_t _NUM_COLS;                // Number of cols
+  uint8_t _MAX_DEBOUNCE;            // Button bounces before trigger
   uint8_t _debounce_count[10][10];  // max_rows max_cols
-  uint8_t _current_row;   // Curenet scan row
+  uint8_t _current_row;             // Curent scan row
 
   void scan_row();
   void init_debounce_count();
