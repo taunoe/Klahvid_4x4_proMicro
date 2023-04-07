@@ -1,7 +1,7 @@
 /**
  *  Project: Klahvid_4x4_proMicro
  *  Started: 26.04.2021
- *  Edited:  05.04.2023
+ *  Edited:  06.04.2023
  * 
  *  Copyright 2023 Tauno Erik
  * 
@@ -11,16 +11,31 @@
 
 #include <Arduino.h>
 #include "Keypad.h"
+#include "TVout.h"
+#include "fontALL.h"
 
-const uint RANDOM_SEED_PIN = 0;
+// TV Pins:
+// 9 - sync
+// 7 - video
+// Gnd
+// 11 audio
 
+const uint RANDOM_SEED_PIN = 0; // A0
+
+// Keypad pins
+// Markings on board
+const uint8_t C1_PIN =  2;
+const uint8_t C2_PIN =  3;
+const uint8_t C3_PIN =  4;
+const uint8_t C4_PIN =  5;
+const uint8_t R1_PIN = 13;
+const uint8_t R2_PIN =  8;
+const uint8_t R3_PIN = 17;  // A3
+const uint8_t R4_PIN =  6;
 // Shift register pins
-const uint SER_PIN = 10;    // SER - serial data input
+const uint SER_PIN   = 10;    // SER - serial data input
 const uint SRCLK_PIN = 11;  // SRCLK - shift register clock input
-const uint RCLK_PIN = 12;   // RCLK - storage register clock input
-
-uint old_random_num;
-uint new_random_num;
+const uint RCLK_PIN  = 12;   // RCLK - storage register clock input
 
 // Keypad
 const uint ROWS_NUM = 4;
@@ -34,22 +49,17 @@ char keys[ROWS_NUM][COLS_NUM] = {
   {'1','5','9','c'}
 };
 
-// Markings on board
-const uint8_t C1_PIN = 2;
-const uint8_t C2_PIN = 3;
-const uint8_t C3_PIN = 4;
-const uint8_t C4_PIN = 5;
-const uint8_t R1_PIN = 6;
-const uint8_t R2_PIN = 7;
-const uint8_t R3_PIN = 8;
-const uint8_t R4_PIN = 9;
-
 // Row and column pins
 byte ROW_PINS[ROWS_NUM] = {C1_PIN, C2_PIN, C3_PIN, C4_PIN};
 byte COL_PINS[COLS_NUM] = {R1_PIN, R2_PIN, R3_PIN, R4_PIN};
 
+uint old_random_num;
+uint new_random_num;
+
 // Keypad object
 Keypad keypad = Keypad(makeKeymap(keys), ROW_PINS, COL_PINS, ROWS_NUM, COLS_NUM);
+
+TVout TV;
 
 // Check if the number is even
 bool is_even(uint num) {
@@ -83,14 +93,32 @@ void setup() {
   // randomSeed() will then shuffle the random function.
   randomSeed(analogRead(RANDOM_SEED_PIN));
   all_leds_off();
+
+  TV.begin(NTSC, 120, 96);
+  TV.select_font(font6x8);
+  TV.println("Hi, mum!");
+  char c = 33;
+  for (int i = 0; i < 93; i++){
+    TV.print(c);
+    TV.print(' ');
+    TV.delay(100);
+    c++;
+  }
+  
+  TV.delay(2000);
+  TV.clear_screen();
 }
 
 void loop() {
+  TV.println(28, 40, "Hi, MUM!");
+  TV.println(28, 50, "6.4.2023");
+
   char key = keypad.getKey(); // Read the keypad
 
   if (key) {
     Serial.print("Key:");
     Serial.println(key);
+    TV.print(key);
 
     // Lightup new key
     uint register_a = 0;
@@ -117,10 +145,4 @@ void loop() {
   }
 
 
-/*
-  shiftOut(SER_PIN, SRCLK_PIN, MSBFIRST, 0b00000000);
-  shiftOut(SER_PIN, SRCLK_PIN, MSBFIRST, 0b00000000);
-  digitalWrite(RCLK_PIN, HIGH); // Latch the output to the shift register
-  digitalWrite(RCLK_PIN, LOW);
-*/
 }
