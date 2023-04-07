@@ -56,6 +56,11 @@ byte COL_PINS[COLS_NUM] = {R1_PIN, R2_PIN, R3_PIN, R4_PIN};
 uint old_random_num;
 uint new_random_num;
 
+bool is_first_keypress = true;
+const char CURSOR_LETTER = '.';
+uint8_t blick_cursor_x = 0;
+uint8_t blick_cursor_y = 0;
+
 // Keypad object
 Keypad keypad = Keypad(makeKeymap(keys), ROW_PINS, COL_PINS, ROWS_NUM, COLS_NUM);
 
@@ -80,6 +85,15 @@ void all_leds_off() {
   digitalWrite(RCLK_PIN, LOW);
 }
 
+void update_cursor() {
+  blick_cursor_x = TV.get_cursor_x();
+  blick_cursor_y = TV.get_cursor_y();
+  Serial.print("x=");
+  Serial.print(TV.get_cursor_x());
+  Serial.print(" y=");
+  Serial.println(TV.get_cursor_y());
+}
+
 void setup() {
   Serial.begin(9600);
 
@@ -100,7 +114,6 @@ void setup() {
   char c = 33;
   for (int i = 0; i < 93; i++){
     TV.print(c);
-    TV.print(' ');
     TV.delay(100);
     c++;
   }
@@ -109,16 +122,29 @@ void setup() {
   TV.clear_screen();
 }
 
+void blick_cursor() {
+  bool is_on = false;
+  TV.print(blick_cursor_x, blick_cursor_y, CURSOR_LETTER);
+}
+
 void loop() {
-  TV.println(28, 40, "Hi, MUM!");
-  TV.println(28, 50, "6.4.2023");
+  if (is_first_keypress) {
+    TV.println(28, 40, "Hi, MUM!");
+    TV.println(28, 50, "6.4.2023");
+  }
 
   char key = keypad.getKey(); // Read the keypad
 
   if (key) {
+    if (is_first_keypress) {
+      TV.clear_screen();
+      is_first_keypress = false;
+    }
     Serial.print("Key:");
     Serial.println(key);
     TV.print(key);
+
+    update_cursor();
 
     // Lightup new key
     uint register_a = 0;
@@ -144,5 +170,6 @@ void loop() {
     digitalWrite(RCLK_PIN, LOW);
   }
 
-
+  // blinking cursor
+  //TV.print
 }

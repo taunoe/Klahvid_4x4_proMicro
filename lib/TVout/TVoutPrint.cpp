@@ -217,6 +217,14 @@ void TVout::set_cursor(uint8_t x, uint8_t y) {
 	cursor_y = y;
 }
 
+uint8_t TVout::get_cursor_x(){
+	uint8_t x = cursor_x;
+  return x;
+}
+uint8_t TVout::get_cursor_y(){
+  return cursor_y;
+}
+
 void TVout::print(uint8_t x, uint8_t y, const char str[]) {
 	cursor_x = x;
 	cursor_y = y;
