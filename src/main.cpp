@@ -139,7 +139,7 @@ void update_cursor() {
 }
 
 // 
-void blick_cursor() {
+void blinck_cursor() {
   if (is_cursor_blink_time && !is_first_keypress) {
 
     is_cursor_blink_time = false;
@@ -296,6 +296,6 @@ void loop() {
     time_prev = time_now;
   }
 
-  blick_cursor();
+  blinck_cursor();
   
 }
